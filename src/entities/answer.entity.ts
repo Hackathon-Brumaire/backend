@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -11,11 +12,12 @@ import { QuestionEntity } from '@entities/question.entity';
 @Entity()
 export class AnswerEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
   @Column()
   title: string;
   @ManyToOne(() => QuestionEntity, question => question.nextAnswers)
-  previousQuestions: QuestionEntity;
+  previousQuestion: QuestionEntity;
   @OneToOne(() => QuestionEntity, question => question.previousAnswer)
+  @JoinColumn()
   nextQuestion: QuestionEntity;
 }

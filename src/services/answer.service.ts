@@ -33,7 +33,7 @@ export class AnswerService extends Repository<AnswerEntity> {
     return findAnswer.nextQuestion;
   }
 
-  public async findAnswerPreviousQuestions(
+  public async findAnswerPreviousQuestion(
     answerId: number,
   ): Promise<QuestionEntity> {
     if (isEmpty(answerId)) throw new HttpException(400, 'no answerId');
@@ -46,6 +46,6 @@ export class AnswerService extends Repository<AnswerEntity> {
       .getOne();
     if (!findAnswer) throw new HttpException(409, 'not valid');
 
-    return findAnswer.previousQuestions;
+    return findAnswer.previousQuestion;
   }
 }

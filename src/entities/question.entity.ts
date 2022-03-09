@@ -16,10 +16,10 @@ export class QuestionEntity extends BaseEntity {
   id: number;
   @Column()
   title: string;
-  @OneToMany(() => AnswerEntity, answer => answer.previousQuestions)
+  @OneToMany(() => AnswerEntity, answer => answer.previousQuestion)
   nextAnswers: AnswerEntity[];
   @OneToOne(() => AnswerEntity, answer => answer.nextQuestion)
   previousAnswer: AnswerEntity;
-  @ManyToOne(() => MediaEntity, media => media.questions)
+  @ManyToOne(() => MediaEntity, media => media.questions, { eager: true })
   media: MediaEntity;
 }
