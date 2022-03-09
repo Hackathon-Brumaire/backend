@@ -20,6 +20,9 @@ export class QuestionEntity extends BaseEntity {
   nextAnswers: AnswerEntity[];
   @OneToOne(() => AnswerEntity, answer => answer.nextQuestion)
   previousAnswer: AnswerEntity;
-  @ManyToOne(() => MediaEntity, media => media.questions, { eager: true })
+  @ManyToOne(() => MediaEntity, media => media.questions, {
+    eager: true,
+    nullable: true,
+  })
   media: MediaEntity;
 }
