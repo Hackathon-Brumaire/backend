@@ -1,10 +1,10 @@
-import { Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Question } from '@entities/question.entity';
+import { BaseEntity, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { QuestionEntity } from '@entities/question.entity';
 
 @Entity()
-export class MediaEntity {
+export class MediaEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: string;
-  @OneToMany(() => Question, question => question.media)
-  questions: Question[];
+  @OneToMany(() => QuestionEntity, question => question.media)
+  questions: QuestionEntity[];
 }
