@@ -1,5 +1,5 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import {Question} from "@entities/question.entity";
+import {Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
+import { Question } from '@entities/question.entity';
 
 @Entity()
 export class Answer {
@@ -7,8 +7,8 @@ export class Answer {
   id: string;
   @Column()
   title: string;
-  @ManyToOne()
+  @ManyToOne(() => Answer, answer => answer.previousQuestions)
   previousQuestions: Question;
-  @ManyToOne()
+  @OneToOne(() => Question)
   nextQuestion: Question;
 }
