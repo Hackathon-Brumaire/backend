@@ -4,6 +4,7 @@ import UsersRoute from '@routes/users.route';
 import validateEnv from '@utils/validateEnv';
 import { QuestionRoute } from '@routes/question.route';
 import { AnswerRoute } from '@routes/answer.route';
+import { MediaRoute } from '@routes/media.route';
 
 validateEnv();
 
@@ -12,6 +13,6 @@ const app = new App([
   new UsersRoute(),
   new QuestionRoute(),
   new AnswerRoute(),
+  new MediaRoute(),
 ]);
-
 app.listen();
