@@ -16,9 +16,9 @@ export class QuestionEntity extends BaseEntity {
   id: number;
   @Column()
   title: string;
-  @OneToMany(() => QuestionEntity, question => question.nextAnswers)
+  @OneToMany(() => AnswerEntity, answer => answer.previousQuestions)
   nextAnswers: AnswerEntity[];
-  @OneToOne(() => AnswerEntity)
+  @OneToOne(() => AnswerEntity, answer => answer.nextQuestion)
   previousAnswer: AnswerEntity;
   @ManyToOne(() => MediaEntity, media => media.questions)
   media: MediaEntity;
