@@ -23,11 +23,12 @@
       "@/*": ["*"],
       "@config": ["config"],
       "@controllers/*": ["controllers/*"],
+      "@databases": ["databases"],
       "@dtos/*": ["dtos/*"],
+      "@entities/*": ["entities/*"],
       "@exceptions/*": ["exceptions/*"],
       "@interfaces/*": ["interfaces/*"],
       "@middlewares/*": ["middlewares/*"],
-      "@models/*": ["models/*"],
       "@routes/*": ["routes/*"],
       "@services/*": ["services/*"],
       "@utils/*": ["utils/*"]
@@ -37,6 +38,3 @@
     "type": "commonjs"
   }
 }
-
-
-

@@ -1,32 +1,31 @@
-import { hash, compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import { EntityRepository, Repository } from 'typeorm';
 import { SECRET_KEY } from '@config';
 import { CreateUserDto } from '@dtos/users.dto';
+import { UserEntity } from '@entities/users.entity';
 import { HttpException } from '@exceptions/HttpException';
 import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { User } from '@interfaces/users.interface';
-import userModel from '@models/users.model';
 import { isEmpty } from '@utils/util';
 
-class AuthService {
-  public users = userModel;
-
+@EntityRepository()
+class AuthService extends Repository<UserEntity> {
   public async signup(userData: CreateUserDto): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
-    const findUser: User = this.users.find(user => user.email === userData.email);
+    const findUser: User = await UserEntity.findOne({ where: { email: userData.email } });
     if (findUser) throw new HttpException(409, `You're email ${userData.email} already exists`);
 
     const hashedPassword = await hash(userData.password, 10);
-    const createUserData: User = { id: this.users.length + 1, ...userData, password: hashedPassword };
-
+    const createUserData: User = await UserEntity.create({ ...userData, password: hashedPassword }).save();
     return createUserData;
   }
 
   public async login(userData: CreateUserDto): Promise<{ cookie: string; findUser: User }> {
     if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
-    const findUser: User = this.users.find(user => user.email === userData.email);
+    const findUser: User = await UserEntity.findOne({ where: { email: userData.email } });
     if (!findUser) throw new HttpException(409, `You're email ${userData.email} not found`);
 
     const isPasswordMatching: boolean = await compare(userData.password, findUser.password);
@@ -41,7 +40,7 @@ class AuthService {
   public async logout(userData: User): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
-    const findUser: User = this.users.find(user => user.email === userData.email && user.password === userData.password);
+    const findUser: User = await UserEntity.findOne({ where: { email: userData.email, password: userData.password } });
     if (!findUser) throw new HttpException(409, "You're not user");
 
     return findUser;
