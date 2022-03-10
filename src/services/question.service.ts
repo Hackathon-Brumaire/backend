@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, getManager, Repository } from 'typeorm';
 import { AnswerEntity } from '@entities/answer.entity';
 import { isEmpty } from '@utils/util';
 import { HttpException } from '@exceptions/HttpException';
@@ -6,8 +6,14 @@ import { QuestionEntity } from '@entities/question.entity';
 
 @EntityRepository()
 export class QuestionService extends Repository<QuestionEntity> {
-  public async createQuestion(questionData: QuestionEntity): Promise<QuestionEntity> {
+  public async createQuestion(
+    questionData: QuestionEntity,
+  ): Promise<QuestionEntity> {
     if (isEmpty(questionData)) throw new HttpException(400, 'is empty data');
+    await QuestionEntity.delete({});
+    await getManager().query(
+      `ALTER SEQUENCE question_entity_id_seq RESTART WITH 1`,
+    );
 
     return await QuestionEntity.create({
       ...questionData,
@@ -30,7 +36,8 @@ export class QuestionService extends Repository<QuestionEntity> {
   ): Promise<AnswerEntity[]> {
     if (isEmpty(questionId)) throw new HttpException(400, 'no answerId');
 
-    const findQuestion: QuestionEntity = await QuestionEntity.createQueryBuilder('question')
+    const findQuestion: QuestionEntity =
+      await QuestionEntity.createQueryBuilder('question')
         .where('question.id = :questionId', { questionId })
         .leftJoinAndSelect('question.nextAnswers', 'answer')
         .getOne();

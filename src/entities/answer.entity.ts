@@ -16,7 +16,9 @@ export class AnswerEntity extends BaseEntity {
   id: number;
   @Column()
   title: string;
-  @ManyToOne(() => QuestionEntity, question => question.nextAnswers)
+  @ManyToOne(() => QuestionEntity, question => question.nextAnswers, {
+    onDelete: 'CASCADE',
+  })
   previousQuestion: QuestionEntity;
   @OneToOne(() => QuestionEntity, question => question.previousAnswer, {
     cascade: ['insert'],
