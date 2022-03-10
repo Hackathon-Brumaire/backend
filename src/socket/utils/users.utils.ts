@@ -4,11 +4,9 @@ const users: UserSocket[] = [];
 
 // addUser, removeUser, getUser, getUsersInRoom
 
-const addUser = ({ id }): UserSocket => {
-  const room = id;
-
+const addUser = (userProps: { id: string; roomId: number; username: string }): UserSocket => {
   // Store user
-  const user = { id, room };
+  const user: UserSocket = { id: userProps.id, roomId: userProps.roomId, username: userProps.username };
   users.push(user);
   return user;
 };
@@ -27,8 +25,12 @@ const getUser = (id): UserSocket => {
   return users.find(user => user.id === id);
 };
 
-const getUsersInRoom = (room: string): UserSocket[] => {
-  return users.filter(user => user.room === room);
+const getUsersInRoom = (roomId: number): UserSocket[] => {
+  return users.filter(user => user.roomId === roomId);
 };
 
-export { addUser, getUser, removeUser };
+const getNumberUsersInRoom = (roomId: number): number => {
+  return users.filter(user => user.roomId === roomId).length;
+};
+
+export { addUser, getUser, removeUser, getNumberUsersInRoom };

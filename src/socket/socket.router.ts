@@ -1,27 +1,44 @@
 import { Socket } from 'socket.io';
 import { app } from '../server';
 import { UserSocket } from './interfaces/user.interface';
-import { addUser, getUser, removeUser } from './utils/users.utils';
-import { generateMessage, generateMessages } from './utils/message.utils';
+import {
+  addUser,
+  getNumberUsersInRoom,
+  getUser,
+  removeUser,
+} from './utils/users.utils';
+import { generateMessage } from './utils/message.utils';
 import { socketConversation } from './utils/conversation.utils';
-import { QuestionController } from '@/controllers/question.controller';
 import { QuestionService } from '@/services/question.service';
-import { AnswerEntity } from '@/entities/answer.entity';
 import { AnswerService } from '@/services/answer.service';
+import { RoomService } from '@/services/room.service';
+import UserService from '@/services/users.service';
 
 const server = app.server;
 const io = require('socket.io')(server);
+
+let count = 0;
 
 // message qui appartaitra à chaque fois que un nouveau client
 // se connecte au serveur
 io.on('connection', async (socket: Socket) => {
   // Un client se connecte au serveur
-  /*if (Array.isArray(socket.handshake.query.room)) {
-    return { error: 'the parameters are not valid' };
-  }*/
-  const user: UserSocket = addUser({ id: socket.id });
+  const roomService = new RoomService();
+  if (Array.isArray(socket.handshake.query.room)) {
+    const roomId = socket.handshake.query.room[0];
+    if (roomService.getRoom({ id: Number.parseInt(roomId), status: 'alive' }) && getNumberUsersInRoom(Number.parseInt(roomId)) < 2) {
+      const user: UserSocket = addUser({ id: socket.id, roomId: Number.parseInt(roomId), username: 'admin' });
+      socket.join(user.roomId.toString());
+    } else {
+      socket.emit('messageProblem', 'votre conversation a eu un probleme');
+    }
+  } else {
+    const room = await roomService.createRoom('alive');
+    console.log(room);
+    const user: UserSocket = addUser({ id: socket.id, roomId: room.id, username: 'jean-' + count });
+    socket.join(user.roomId.toString());
+  }
   // permet de créer des room, et de faire rejoindre le client dans la room
-  socket.join(user.room);
 
   const firstSentence = 'Welcome!';
 
@@ -33,29 +50,36 @@ io.on('connection', async (socket: Socket) => {
     },
   ]);
 
+  console.log('on passe ici');
+
   emitQuestion(socket, 1);
 
-  socket.on('sendMessage', async (id: number) => {
+  socket.on('sendMessage', async (data: string) => {
     const user = getUser(socket.id);
-    const answerService = new AnswerService();
-    const anwser = await answerService.findAnswerById(id);
-    const nextQuestion = await answerService.findAnswerNextQuestion(anwser.id);
-    registerAnswer(socket, anwser.title);
-    if (nextQuestion === null) {
-      emitNoMoreQuestion(socket);
-      return;
+    if (getNumberUsersInRoom(user.roomId) === 1) {
+      sendMessageOnOneUser(socket, Number.parseInt(data));
+    } else {
+      sendMessageOnMultipleUser(socket, data);
     }
-
-    emitQuestion(socket, nextQuestion.id);
   });
 
   // Un client se déconnecte du serveur
   // déclencher un événement quand un client se deconnecte
   socket.on('disconnect', async () => {
-    removeUser(socket.id);
+    const user = getUser(socket.id);
+    const roomId = user.roomId;
+    const roomService: RoomService = new RoomService();
+    const room = await roomService.getRoom({ id: roomId, status: 'alive' });
+    if (roomService.deleteRoom(room)) removeUser(socket.id);
     socketConversation.delete(socket.id);
   });
 });
+
+export const isFixed = async (socket: Socket) => {
+  const questionService = new QuestionService();
+  const question = await questionService.findQuestionById(35);
+  socket.emit('isFixed', question);
+};
 
 export const emitNoMoreQuestion = async (socket: Socket) => {
   socket.emit('noMoreQuestion', socketConversation.get(socket.id));
@@ -63,14 +87,15 @@ export const emitNoMoreQuestion = async (socket: Socket) => {
 
 export const emitQuestion = async (socket: Socket, questionId: number) => {
   const questionService = new QuestionService();
+  console.log('question');
   const question = await questionService.findQuestionById(questionId);
+  console.log('question again');
   socket.emit('question', question);
   registerQuestion(socket, question.title);
 };
 
 export const registerQuestion = (socket: Socket, question: string) => {
-  if (!socketConversation.has(socket.id))
-    socket.emit('messageProblem', 'votre conversation a eu un probleme');
+  if (!socketConversation.has(socket.id)) socket.emit('messageProblem', 'votre conversation a eu un probleme');
   socketConversation.get(socket.id).push({
     message: question,
     messageType: 'question',
@@ -78,12 +103,36 @@ export const registerQuestion = (socket: Socket, question: string) => {
 };
 
 export const registerAnswer = (socket: Socket, answer: string) => {
-  if (!socketConversation.has(socket.id))
-    socket.emit('messageProblem', 'votre conversation a eu un probleme');
+  if (!socketConversation.has(socket.id)) socket.emit('messageProblem', 'votre conversation a eu un probleme');
   socketConversation.get(socket.id).push({
     message: answer,
     messageType: 'answer',
   });
+};
+
+export const sendMessageOnOneUser = async (socket: Socket, id: number) => {
+  const user = getUser(socket.id);
+  const answerService = new AnswerService();
+  const anwser = await answerService.findAnswerById(id);
+  const nextQuestion = await answerService.findAnswerNextQuestion(anwser.id);
+  registerAnswer(socket, anwser.title);
+  if (nextQuestion === null) {
+    emitNoMoreQuestion(socket);
+    return;
+  }
+
+  emitQuestion(socket, nextQuestion.id);
+};
+
+export const sendMessageOnMultipleUser = async (socket: Socket, message: string) => {
+  const user = getUser(socket.id);
+  if (user.username === 'admin') {
+    registerQuestion(socket, message);
+  } else {
+    registerAnswer(socket, message);
+  }
+
+  io.to(user.roomId).emit('question', { id: 123, title: message, nextAnswers: [], media: null });
 };
 
 export { server };
