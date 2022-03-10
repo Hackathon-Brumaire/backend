@@ -6,6 +6,22 @@ import { NextFunction, Request, Response } from 'express';
 export class QuestionController {
   private questionService = new QuestionService();
 
+  async createQuestion(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const questionData = req.body;
+      const question: QuestionEntity =
+        await this.questionService.createQuestion(questionData);
+
+      res.status(200).json(question);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getQuestionById(
     req: Request,
     res: Response,
