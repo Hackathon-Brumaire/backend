@@ -13,5 +13,6 @@ EXPOSE 3000
 FROM common-build-stage as development-build-stage
 
 ENV NODE_ENV development
+VOLUME /app/medias
 
 CMD ["npm", "run", "dev"]
