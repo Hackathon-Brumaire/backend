@@ -18,9 +18,15 @@ export class AnswerEntity extends BaseEntity {
   title: string;
   @ManyToOne(() => QuestionEntity, question => question.nextAnswers)
   previousQuestion: QuestionEntity;
-  @OneToOne(() => QuestionEntity, question => question.previousAnswer)
+  @OneToOne(() => QuestionEntity, question => question.previousAnswer, {
+    cascade: ['insert'],
+  })
   @JoinColumn()
   nextQuestion: QuestionEntity;
-  @OneToOne(() => DocEntity, doc => doc.answer, { eager: true, nullable: true })
+  @OneToOne(() => DocEntity, doc => doc.answer, {
+    eager: true,
+    nullable: true,
+    cascade: ['insert'],
+  })
   doc: DocEntity;
 }

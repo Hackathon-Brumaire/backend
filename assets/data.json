@@ -7,82 +7,82 @@
         "title": "Avez vous un ou plusieurs voyant allumer ?",
         "nextAnswers": [
           {
-            "title":"Plusieurs voyants"
+            "title": "Plusieurs voyants"
           },
           {
-            "title":"Une voyant",
-            "nextQuestion":{
-              "title":"Quel voyant est allumé ?",
-              "nextAnswers":[
+            "title": "Une voyant",
+            "nextQuestion": {
+              "title": "Quel voyant est allumé ?",
+              "nextAnswers": [
                 {
                   "title": "Moteur",
                   "doc": {
                     "label": "Verification du moteur",
-                    "description":"Vidéo de demonstration d'une vérification de moteur",
-                    "type":"video",
-                    "link":"http://media"
+                    "description": "Vidéo de demonstration d'une vérification de moteur",
+                    "type": "video",
+                    "link": "http://media"
                   }
                 },
                 {
                   "title": "Batterie",
                   "doc": {
                     "label": "Verification de la batterie",
-                    "description":"Vidéo de demonstration d'une vérification de batterie",
-                    "type":"video",
-                    "link":"http://media"
+                    "description": "Vidéo de demonstration d'une vérification de batterie",
+                    "type": "video",
+                    "link": "http://media"
                   }
                 },
                 {
                   "title": "Frein",
                   "doc": {
                     "label": "Verification du frein",
-                    "description":"Vidéo de demonstration d'une vérification du frein",
-                    "type":"video",
-                    "link":"http://media"
+                    "description": "Vidéo de demonstration d'une vérification du frein",
+                    "type": "video",
+                    "link": "http://media"
                   }
                 }
               ]
             }
           },
           {
-            "title":"Aucun voyant",
-            "nextQuestion":{
-              "title":"Vérifiez la batterie",
-              "doc":{
+            "title": "Aucun voyant",
+            "nextQuestion": {
+              "title": "Vérifiez la batterie",
+              "doc": {
                 "label": "Verification du frein",
-                "description":"Vidéo de demonstration d'une vérification du frein",
-                "type":"video",
-                "link":"http://media"
+                "description": "Vidéo de demonstration d'une vérification du frein",
+                "type": "video",
+                "link": "http://media"
               },
               "nextAnswers": [
                 {
-                  "title":"Bon état",
-                  "nextQuestion":{
-                    "title":"Vérifiez le moteur",
-                    "nextActions":[
+                  "title": "Bon état",
+                  "nextQuestion": {
+                    "title": "Vérifiez le moteur",
+                    "nextActions": [
                       {
                         "title": "Bon état"
                       },
                       {
                         "title": "Mauvais état",
-                        "doc":{
+                        "doc": {
                           "label": "Verification du frein",
-                          "description":"Vidéo de demonstration d'une vérification du frein",
-                          "type":"video",
-                          "link":"http://media"
+                          "description": "Vidéo de demonstration d'une vérification du frein",
+                          "type": "video",
+                          "link": "http://media"
                         }
                       }
                     ],
-                    "doc":{
+                    "doc": {
                       "label": "Verification du frein",
-                      "description":"Vidéo de demonstration d'une vérification du frein",
-                      "type":"video",
-                      "link":"http://media"
+                      "description": "Vidéo de demonstration d'une vérification du frein",
+                      "type": "video",
+                      "link": "http://media"
                     }
                   }
                 },
                 {
-                  "title":"Mauvais état"
+                  "title": "Mauvais état"
                 }
               ]
             }
@@ -97,48 +97,52 @@
         "nextAnswers": [
           {
             "title": "non",
-            "nextQuestion":{
-              "title":"Quel accessoire est concerné ?",
-              "nextAnswers":[
+            "nextQuestion": {
+              "title": "Quel accessoire est concerné ?",
+              "nextAnswers": [
                 {
                   "title": "Batterie",
                   "doc": {
                     "label": "Verification de la batterie",
-                    "description":"Vidéo de demonstration d'une vérification de batterie",
-                    "type":"video",
-                    "link":"http://media"
+                    "description": "Vidéo de demonstration d'une vérification de batterie",
+                    "type": "video",
+                    "link": "http://media"
                   }
-                }, {
+                },
+                {
                   "title": "Jupe",
                   "doc": {
                     "label": "Verification de la jupe",
-                    "description":"Vidéo de demonstration d'une vérification et du changement de la jupe",
-                    "type":"video",
-                    "link":"http://media"
+                    "description": "Vidéo de demonstration d'une vérification et du changement de la jupe",
+                    "type": "video",
+                    "link": "http://media"
                   }
-                }, {
+                },
+                {
                   "title": "Selle",
                   "doc": {
                     "label": "Verification de la selle",
-                    "description":"Vidéo de demonstration d'une réparation et du changement de la selle",
-                    "type":"video",
-                    "link":"http://media"
+                    "description": "Vidéo de demonstration d'une réparation et du changement de la selle",
+                    "type": "video",
+                    "link": "http://media"
                   }
-                }, {
+                },
+                {
                   "title": "Top case",
                   "doc": {
                     "label": "Verification du top case",
-                    "description":"Vidéo de demonstration d'une réparation et du changement du top case",
-                    "type":"video",
-                    "link":"http://media"
+                    "description": "Vidéo de demonstration d'une réparation et du changement du top case",
+                    "type": "video",
+                    "link": "http://media"
                   }
-                }, {
+                },
+                {
                   "title": "Compteur de vitesse",
                   "doc": {
                     "label": "Verification du compteur de vitesse",
-                    "description":"Vidéo de demonstration d'une réparation et du changement du compteur de vitesse",
-                    "type":"video",
-                    "link":"http://media"
+                    "description": "Vidéo de demonstration d'une réparation et du changement du compteur de vitesse",
+                    "type": "video",
+                    "link": "http://media"
                   }
                 }
               ]
@@ -153,9 +157,9 @@
                   "title": "Cale pieds",
                   "doc": {
                     "label": "Verification du cale pieds",
-                    "description":"Vidéo de demonstration d'une réparation du cale pieds",
-                    "type":"video",
-                    "link":"http://media"
+                    "description": "Vidéo de demonstration d'une réparation du cale pieds",
+                    "type": "video",
+                    "link": "http://media"
                   }
                 },
                 {
@@ -167,17 +171,18 @@
                         "title": "Prise tordu",
                         "doc": {
                           "label": "Verification de la prise de la batterie",
-                          "description":"Vidéo de demonstration d'une vérification et du remplacement d'une prise de batterie",
-                          "type":"video",
-                          "link":"http://media"
+                          "description": "Vidéo de demonstration d'une vérification et du remplacement d'une prise de batterie",
+                          "type": "video",
+                          "link": "http://media"
                         }
-                      },{
+                      },
+                      {
                         "title": "Grincement",
                         "doc": {
                           "label": "Verification du cale pieds",
-                          "description":"Vidéo de demonstration d'une réparation du cale pieds",
-                          "type":"video",
-                          "link":"http://media"
+                          "description": "Vidéo de demonstration d'une réparation du cale pieds",
+                          "type": "video",
+                          "link": "http://media"
                         }
                       }
                     ]

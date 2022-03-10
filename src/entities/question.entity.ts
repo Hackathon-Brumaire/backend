@@ -21,6 +21,7 @@ export class QuestionEntity extends BaseEntity {
   title: string;
   @OneToMany(() => AnswerEntity, answer => answer.previousQuestion, {
     eager: true,
+    cascade: ['insert'],
   })
   nextAnswers: AnswerEntity[];
   @OneToOne(() => AnswerEntity, answer => answer.nextQuestion)
@@ -33,7 +34,7 @@ export class QuestionEntity extends BaseEntity {
   @ManyToMany(
     () => PartCoordinateEntity,
     partCoordinate => partCoordinate.question,
-    { nullable: false, eager: true },
+    { nullable: false, eager: true, cascade: ['insert'] },
   )
   @JoinTable({ name: 'question_parts_coordinates' })
   partsCoordinates: PartCoordinateEntity[];
