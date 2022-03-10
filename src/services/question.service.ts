@@ -9,8 +9,7 @@ export class QuestionService extends Repository<QuestionEntity> {
   public async createQuestion(
     questionData: QuestionEntity,
   ): Promise<QuestionEntity> {
-    if (isEmpty(questionData))
-      throw new HttpException(400, "You're not userData");
+    if (isEmpty(questionData)) throw new HttpException(400, 'is empty data');
 
     return await QuestionEntity.create({
       ...questionData,

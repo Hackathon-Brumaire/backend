@@ -1,6 +1,13 @@
-import { BaseEntity, Column, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { AnswerEntity } from '@entities/answer.entity';
 
+@Entity()
 export class DocEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: string;
