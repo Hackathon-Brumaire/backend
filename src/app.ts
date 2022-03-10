@@ -17,6 +17,7 @@ class App {
   public app: express.Application;
   public env: string;
   public port: string | number;
+  public server: any;
 
   constructor(routes: Routes[]) {
     this.app = express();
@@ -29,8 +30,8 @@ class App {
     this.initializeErrorHandling();
   }
 
-  public listen() {
-    this.app.listen(this.port, () => {
+  public listen(server: any) {
+    server.listen(this.port, () => {
       logger.info(`=================================`);
       logger.info(`======= ENV: ${this.env} =======`);
       logger.info(`🚀 App listening on the port ${this.port}`);
@@ -43,7 +44,7 @@ class App {
   }
 
   private connectToDatabase() {
-    createConnection(dbConnection);
+    //createConnection(dbConnection);
   }
 
   private initializeMiddlewares() {

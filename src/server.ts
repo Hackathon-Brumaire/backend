@@ -8,11 +8,9 @@ import { MediaRoute } from '@routes/media.route';
 
 validateEnv();
 
-const app = new App([
-  new IndexRoute(),
-  new UsersRoute(),
-  new QuestionRoute(),
-  new AnswerRoute(),
-  new MediaRoute(),
-]);
-app.listen();
+export const app = new App([new IndexRoute(), new UsersRoute(), new QuestionRoute(), new AnswerRoute(), new MediaRoute()]);
+
+import { server } from './socket/socket.router';
+
+//app.listen(server);
+app.listen(server);
