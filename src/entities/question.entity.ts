@@ -1,12 +1,4 @@
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { AnswerEntity } from '@entities/answer.entity';
 import { MediaEntity } from '@entities/media.entity';
 

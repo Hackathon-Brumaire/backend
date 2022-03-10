@@ -1,4 +1,5 @@
 export interface UserSocket {
   id: string;
-  room: string;
+  roomId: number;
+  username: string;
 }
