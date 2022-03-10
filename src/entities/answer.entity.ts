@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { QuestionEntity } from '@entities/question.entity';
+import { DocEntity } from '@entities/doc.entity';
 
 @Entity()
 export class AnswerEntity extends BaseEntity {
@@ -20,4 +21,6 @@ export class AnswerEntity extends BaseEntity {
   @OneToOne(() => QuestionEntity, question => question.previousAnswer)
   @JoinColumn()
   nextQuestion: QuestionEntity;
+  @OneToOne(() => DocEntity, doc => doc.answer, { nullable: true })
+  doc: DocEntity;
 }
