@@ -25,6 +25,7 @@ class App {
     this.port = PORT || 3000;
 
     this.env !== 'test' && this.connectToDatabase();
+    this.server = require('http').createServer(this.app);
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
     this.initializeErrorHandling();

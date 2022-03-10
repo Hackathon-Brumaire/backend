@@ -5,7 +5,7 @@ import { addUser, getUser, removeUser } from './utils/users.utils';
 import { generateMessage, generateMessages } from './utils/message.utils';
 import { socketConversation } from './utils/conversation.utils';
 
-const server = require('http').createServer(app.app);
+const server = app.server;
 const io = require('socket.io')(server);
 
 // message qui appartaitra à chaque fois que un nouveau client
@@ -15,7 +15,6 @@ io.on('connection', async (socket: Socket) => {
   /*if (Array.isArray(socket.handshake.query.room)) {
     return { error: 'the parameters are not valid' };
   }*/
-  console.log('je passe là');
   const user: UserSocket = addUser({ id: socket.id });
   // permet de créer des room, et de faire rejoindre le client dans la room
   socket.join(user.room);
@@ -23,7 +22,6 @@ io.on('connection', async (socket: Socket) => {
   const firstSentence = 'Welcome!';
 
   socket.emit('welcome', generateMessage(firstSentence));
-  console.log('après le emit');
   socketConversation.set(socket.id, [
     {
       message: firstSentence,
