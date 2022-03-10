@@ -11,6 +11,11 @@ export class QuestionRoute {
   }
 
   private initializeRoutes() {
+    this.router.post(
+      `${this.path}`,
+      (req: Request, res: Response, next: NextFunction) =>
+        this.questionController.createQuestion(req, res, next),
+    );
     this.router.get(
       `${this.path}/:questionId`,
       (req: Request, res: Response, next: NextFunction) =>

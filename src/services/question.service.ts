@@ -6,6 +6,17 @@ import { QuestionEntity } from '@entities/question.entity';
 
 @EntityRepository()
 export class QuestionService extends Repository<QuestionEntity> {
+  public async createQuestion(
+    questionData: QuestionEntity,
+  ): Promise<QuestionEntity> {
+    if (isEmpty(questionData))
+      throw new HttpException(400, "You're not userData");
+
+    return await QuestionEntity.create({
+      ...questionData,
+    }).save();
+  }
+
   public async findQuestionById(questionId: number): Promise<QuestionEntity> {
     if (isEmpty(questionId)) throw new HttpException(400, 'no questionId');
 
