@@ -44,7 +44,7 @@ class App {
   }
 
   private connectToDatabase() {
-    //createConnection(dbConnection);
+    createConnection(dbConnection);
   }
 
   private initializeMiddlewares() {

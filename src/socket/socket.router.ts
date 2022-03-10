@@ -1,6 +1,4 @@
-import http from 'http';
 import { Socket } from 'socket.io';
-import express, { Request, Response } from 'express';
 import { app } from '../server';
 import { UserSocket } from './interfaces/user.interface';
 import { addUser, getUser, removeUser } from './utils/users.utils';
