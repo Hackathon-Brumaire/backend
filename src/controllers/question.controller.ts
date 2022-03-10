@@ -1,19 +1,56 @@
 import { QuestionService } from '@services/question.service';
 import { QuestionEntity } from '@entities/question.entity';
 import { AnswerEntity } from '@entities/answer.entity';
+import { NextFunction, Request, Response } from 'express';
 
 export class QuestionController {
   private questionService = new QuestionService();
 
-  getQuestionById(questionId: number): Promise<QuestionEntity> {
-    return this.questionService.findQuestionById(questionId);
+  async getQuestionById(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const questionId = parseInt(req.params.questionId);
+      const question: QuestionEntity =
+        await this.questionService.findQuestionById(questionId);
+
+      res.status(200).json(question);
+    } catch (error) {
+      next(error);
+    }
   }
 
-  getQuestionNextAnswers(questionId: number): Promise<AnswerEntity[]> {
-    return this.questionService.findQuestionNextAnswers(questionId);
+  async getQuestionNextAnswers(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const questionId = parseInt(req.params.questionId);
+      const question: AnswerEntity[] =
+        await this.questionService.findQuestionNextAnswers(questionId);
+
+      res.status(200).json(question);
+    } catch (error) {
+      next(error);
+    }
   }
 
-  getQuestionPreviousAnswer(questionId: number): Promise<AnswerEntity> {
-    return this.questionService.findQuestionPreviousAnswer(questionId);
+  async getQuestionPreviousAnswer(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const questionId = parseInt(req.params.questionId);
+      const question: AnswerEntity =
+        await this.questionService.findQuestionPreviousAnswer(questionId);
+
+      res.status(200).json(question);
+    } catch (error) {
+      next(error);
+    }
   }
 }

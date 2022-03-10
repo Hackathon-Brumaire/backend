@@ -42,7 +42,7 @@ export class AnswerService extends Repository<AnswerEntity> {
       'answer',
     )
       .where('answer.id = :answerId', { answerId })
-      .leftJoinAndSelect('answer.previousQuestions', 'question')
+      .leftJoinAndSelect('answer.previousQuestion', 'question')
       .getOne();
     if (!findAnswer) throw new HttpException(409, 'not valid');
 

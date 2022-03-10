@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { AnswerController } from '@controllers/answer.controller';
 
 export class AnswerRoute {
@@ -11,14 +11,20 @@ export class AnswerRoute {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}/:id`, this.answerController.getAnswerById);
     this.router.get(
-      `${this.path}/:id/next-question`,
-      this.answerController.getAnswerNextQuestion,
+      `${this.path}/:answerId`,
+      (req: Request, res: Response, next: NextFunction) =>
+        this.answerController.getAnswerById(req, res, next),
     );
     this.router.get(
-      `${this.path}/:id/previous-question`,
-      this.answerController.getAnswerPreviousQuestion,
+      `${this.path}/:answerId/next-question`,
+      (req: Request, res: Response, next: NextFunction) =>
+        this.answerController.getAnswerNextQuestion(req, res, next),
+    );
+    this.router.get(
+      `${this.path}/:answerId/previous-question`,
+      (req: Request, res: Response, next: NextFunction) =>
+        this.answerController.getAnswerPreviousQuestion(req, res, next),
     );
   }
 }
