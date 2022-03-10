@@ -26,8 +26,15 @@ io.on('connection', async (socket: Socket) => {
   const roomService = new RoomService();
   if (Array.isArray(socket.handshake.query.room)) {
     const roomId = socket.handshake.query.room[0];
-    if (roomService.getRoom({ id: Number.parseInt(roomId), status: 'alive' }) && getNumberUsersInRoom(Number.parseInt(roomId)) < 2) {
-      const user: UserSocket = addUser({ id: socket.id, roomId: Number.parseInt(roomId), username: 'admin' });
+    if (
+      roomService.getRoom({ id: Number.parseInt(roomId), status: 'alive' }) &&
+      getNumberUsersInRoom(Number.parseInt(roomId)) < 2
+    ) {
+      const user: UserSocket = addUser({
+        id: socket.id,
+        roomId: Number.parseInt(roomId),
+        username: 'admin',
+      });
       socket.join(user.roomId.toString());
     } else {
       socket.emit('messageProblem', 'votre conversation a eu un probleme');
@@ -35,7 +42,11 @@ io.on('connection', async (socket: Socket) => {
   } else {
     const room = await roomService.createRoom('alive');
     console.log(room);
-    const user: UserSocket = addUser({ id: socket.id, roomId: room.id, username: 'jean-' + count });
+    const user: UserSocket = addUser({
+      id: socket.id,
+      roomId: room.id,
+      username: 'jean-' + count,
+    });
     socket.join(user.roomId.toString());
   }
   // permet de créer des room, et de faire rejoindre le client dans la room
@@ -70,7 +81,11 @@ io.on('connection', async (socket: Socket) => {
     const roomId = user.roomId;
     const roomService: RoomService = new RoomService();
     const room = await roomService.getRoom({ id: roomId, status: 'alive' });
-    if (roomService.deleteRoom(room)) removeUser(socket.id);
+    await roomService.deleteRoom({
+      id: room.id,
+      status: room.status as 'alive' | 'dead',
+    });
+    removeUser(socket.id);
     socketConversation.delete(socket.id);
   });
 });
@@ -95,18 +110,22 @@ export const emitQuestion = async (socket: Socket, questionId: number) => {
 };
 
 export const registerQuestion = (socket: Socket, question: string) => {
-  if (!socketConversation.has(socket.id)) socket.emit('messageProblem', 'votre conversation a eu un probleme');
+  if (!socketConversation.has(socket.id))
+    socket.emit('messageProblem', 'votre conversation a eu un probleme');
   socketConversation.get(socket.id).push({
     message: question,
     messageType: 'question',
+    createdAt: new Date().getTime(),
   });
 };
 
 export const registerAnswer = (socket: Socket, answer: string) => {
-  if (!socketConversation.has(socket.id)) socket.emit('messageProblem', 'votre conversation a eu un probleme');
+  if (!socketConversation.has(socket.id))
+    socket.emit('messageProblem', 'votre conversation a eu un probleme');
   socketConversation.get(socket.id).push({
     message: answer,
     messageType: 'answer',
+    createdAt: new Date().getTime(),
   });
 };
 
@@ -124,7 +143,10 @@ export const sendMessageOnOneUser = async (socket: Socket, id: number) => {
   emitQuestion(socket, nextQuestion.id);
 };
 
-export const sendMessageOnMultipleUser = async (socket: Socket, message: string) => {
+export const sendMessageOnMultipleUser = async (
+  socket: Socket,
+  message: string,
+) => {
   const user = getUser(socket.id);
   if (user.username === 'admin') {
     registerQuestion(socket, message);
@@ -132,7 +154,12 @@ export const sendMessageOnMultipleUser = async (socket: Socket, message: string)
     registerAnswer(socket, message);
   }
 
-  io.to(user.roomId).emit('question', { id: 123, title: message, nextAnswers: [], media: null });
+  io.to(user.roomId).emit('question', {
+    id: 123,
+    title: message,
+    nextAnswers: [],
+    media: null,
+  });
 };
 
 export { server };
