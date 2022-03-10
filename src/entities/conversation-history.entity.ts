@@ -5,7 +5,7 @@ export class ConversationHistoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
-  username: string;
+  roomId: string;
   @Column()
   conversationHistorics: string;
 }
