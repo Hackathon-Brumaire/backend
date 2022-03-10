@@ -13,6 +13,8 @@ import { QuestionService } from '@/services/question.service';
 import { AnswerService } from '@/services/answer.service';
 import { RoomService } from '@/services/room.service';
 import UserService from '@/services/users.service';
+import { ConversationHistoryService } from '@/services/conversation-history.service';
+import { ConversationHistoryEntity } from '@/entities/conversation-history.entity';
 
 const server = app.server;
 const io = require('socket.io')(server);
@@ -58,10 +60,12 @@ io.on('connection', async (socket: Socket) => {
     {
       message: firstSentence,
       messageType: 'question',
+      createdAt: new Date().getTime(),
     },
   ]);
-
-  console.log('on passe ici');
+  console.log('avant');
+  await saveConversationHistory(socket);
+  console.log('après');
 
   emitQuestion(socket, 1);
 
@@ -87,6 +91,7 @@ io.on('connection', async (socket: Socket) => {
     });
     removeUser(socket.id);
     socketConversation.delete(socket.id);
+    deleteConversationHistory(socket);
   });
 });
 
@@ -102,14 +107,12 @@ export const emitNoMoreQuestion = async (socket: Socket) => {
 
 export const emitQuestion = async (socket: Socket, questionId: number) => {
   const questionService = new QuestionService();
-  console.log('question');
   const question = await questionService.findQuestionById(questionId);
-  console.log('question again');
   socket.emit('question', question);
   registerQuestion(socket, question.title);
 };
 
-export const registerQuestion = (socket: Socket, question: string) => {
+export const registerQuestion = async (socket: Socket, question: string) => {
   if (!socketConversation.has(socket.id))
     socket.emit('messageProblem', 'votre conversation a eu un probleme');
   socketConversation.get(socket.id).push({
@@ -117,6 +120,45 @@ export const registerQuestion = (socket: Socket, question: string) => {
     messageType: 'question',
     createdAt: new Date().getTime(),
   });
+  updateConversationHistory(socket);
+};
+
+export const updateConversationHistory = async (socket: Socket) => {
+  const user = getUser(socket.id);
+  console.log(socket.id);
+  console.log(socketConversation.get(socket.id));
+  const conversationHistoryService = new ConversationHistoryService();
+  const conversation = await conversationHistoryService.getFromRoomId(
+    user.roomId.toString(),
+  );
+  conversation.conversationHistorics = JSON.stringify(
+    socketConversation.get(socket.id),
+  );
+
+  conversation.save();
+};
+
+export const saveConversationHistory = async (socket: Socket) => {
+  const user = getUser(socket.id);
+  const conversationHistoryService = new ConversationHistoryService();
+  const conversationHistorics = JSON.stringify(
+    socketConversation.get(socket.id),
+  );
+  console.log(conversationHistorics);
+  return await conversationHistoryService.createConversation(
+    user.roomId.toString(),
+    conversationHistorics,
+  );
+};
+
+export const deleteConversationHistory = async (socket: Socket) => {
+  const user = getUser(socket.id);
+  const conversationHistoryService = new ConversationHistoryService();
+  const conversation = await conversationHistoryService.getFromRoomId(
+    user.roomId.toString(),
+  );
+
+  await conversation.remove();
 };
 
 export const registerAnswer = (socket: Socket, answer: string) => {
@@ -127,6 +169,7 @@ export const registerAnswer = (socket: Socket, answer: string) => {
     messageType: 'answer',
     createdAt: new Date().getTime(),
   });
+  updateConversationHistory(socket);
 };
 
 export const sendMessageOnOneUser = async (socket: Socket, id: number) => {

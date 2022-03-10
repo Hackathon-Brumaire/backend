@@ -13,7 +13,7 @@ export class ConversationHistoryRoute {
 
   private initializeRoutes() {
     this.router.get(
-      `${this.path}/:id`,
+      `${this.path}/rooms/:id`,
       (req: Request, res: Response, next: NextFunction) =>
         this.conversationHistoryController.getByRoomId(req, res, next),
     );

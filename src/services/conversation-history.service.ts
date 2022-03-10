@@ -8,13 +8,13 @@ export class ConversationHistoryService extends Repository<ConversationHistoryEn
     conversationHistory: string,
   ): Promise<ConversationHistoryEntity> {
     return await ConversationHistoryEntity.create({
-      ...{ roomId, conversationHistory },
+      ...{ roomId, conversationHistorics: conversationHistory },
     }).save();
   }
 
   public async getFromRoomId(
     roomId: string,
-  ): Promise<ConversationHistoryEntity[]> {
-    return await ConversationHistoryEntity.find({ where: { roomId } });
+  ): Promise<ConversationHistoryEntity> {
+    return await ConversationHistoryEntity.findOne({ where: { roomId } });
   }
 }

@@ -6,4 +6,5 @@ export interface ConversationHistoric {
   createdAt: number;
 }
 
-export const socketConversation: Map<string, ConversationHistoric[]> = new Map();
+export const socketConversation: Map<string, ConversationHistoric[]> =
+  new Map();
