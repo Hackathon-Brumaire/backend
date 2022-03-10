@@ -18,14 +18,17 @@ export class QuestionEntity extends BaseEntity {
   title: string;
   @OneToMany(() => AnswerEntity, answer => answer.previousQuestion, {
     eager: true,
-    cascade: ['insert'],
+    cascade: true,
   })
   nextAnswers: AnswerEntity[];
-  @OneToOne(() => AnswerEntity, answer => answer.nextQuestion)
+  @OneToOne(() => AnswerEntity, answer => answer.nextQuestion, {
+    cascade: true,
+  })
   previousAnswer: AnswerEntity;
   @ManyToOne(() => MediaEntity, media => media.questions, {
     eager: true,
     nullable: true,
+    cascade: true,
   })
   media: MediaEntity;
 }
