@@ -4,6 +4,10 @@ import { UserSocket } from './interfaces/user.interface';
 import { addUser, getUser, removeUser } from './utils/users.utils';
 import { generateMessage, generateMessages } from './utils/message.utils';
 import { socketConversation } from './utils/conversation.utils';
+import { QuestionController } from '@/controllers/question.controller';
+import { QuestionService } from '@/services/question.service';
+import { AnswerEntity } from '@/entities/answer.entity';
+import { AnswerService } from '@/services/answer.service';
 
 const server = app.server;
 const io = require('socket.io')(server);
@@ -29,48 +33,20 @@ io.on('connection', async (socket: Socket) => {
     },
   ]);
 
-  //socket.emit('welcome', generateMessage('Welcome !'))
+  emitQuestion(socket, 1);
 
-  // pour envoyer un message à tous les utilisateurs sauf l'utilisateur
-  // qui vient de se connecter donc celui qui correspond à Socket
-  //socket.broadcast.emit('welcome', generateMessage('A new User has joined!'))
-
-  //on setup un callback pour l'accusé de réception coté client pour SendMessage
-  socket.on('sendMessage', async (message: string) => {
+  socket.on('sendMessage', async (id: number) => {
     const user = getUser(socket.id);
-    if (user) {
-      io.to(user.room).emit('messageUpdated', generateMessage(message));
+    const answerService = new AnswerService();
+    const anwser = await answerService.findAnswerById(id);
+    const nextQuestion = await answerService.findAnswerNextQuestion(anwser.id);
+    registerAnswer(socket, anwser.title);
+    if (nextQuestion === null) {
+      emitNoMoreQuestion(socket);
+      return;
     }
-  });
 
-  socket.on('sendMessages', async (answer: string) => {
-    const user = getUser(socket.id);
-    const question = 'que voulez vous ?';
-
-    if (!socketConversation.has(socket.id))
-      io.to(user.room).emit(
-        'messageProblem',
-        'votre conversation a eu un probleme',
-      );
-    socketConversation.get(socket.id).push({
-      message: answer,
-      messageType: 'answer',
-    });
-    socketConversation.get(socket.id).push({
-      message: question,
-      messageType: 'question',
-    });
-
-    if (user) {
-      io.to(user.room).emit('messageUpdated', {
-        question,
-        answer: [
-          'je suis le choix 1',
-          'je suis le choix 2',
-          'je suis le choix 3',
-        ],
-      });
-    }
+    emitQuestion(socket, nextQuestion.id);
   });
 
   // Un client se déconnecte du serveur
@@ -80,5 +56,34 @@ io.on('connection', async (socket: Socket) => {
     socketConversation.delete(socket.id);
   });
 });
+
+export const emitNoMoreQuestion = async (socket: Socket) => {
+  socket.emit('noMoreQuestion', socketConversation.get(socket.id));
+};
+
+export const emitQuestion = async (socket: Socket, questionId: number) => {
+  const questionService = new QuestionService();
+  const question = await questionService.findQuestionById(questionId);
+  socket.emit('question', question);
+  registerQuestion(socket, question.title);
+};
+
+export const registerQuestion = (socket: Socket, question: string) => {
+  if (!socketConversation.has(socket.id))
+    socket.emit('messageProblem', 'votre conversation a eu un probleme');
+  socketConversation.get(socket.id).push({
+    message: question,
+    messageType: 'question',
+  });
+};
+
+export const registerAnswer = (socket: Socket, answer: string) => {
+  if (!socketConversation.has(socket.id))
+    socket.emit('messageProblem', 'votre conversation a eu un probleme');
+  socketConversation.get(socket.id).push({
+    message: answer,
+    messageType: 'answer',
+  });
+};
 
 export { server };

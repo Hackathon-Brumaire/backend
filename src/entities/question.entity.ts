@@ -16,7 +16,9 @@ export class QuestionEntity extends BaseEntity {
   id: number;
   @Column()
   title: string;
-  @OneToMany(() => AnswerEntity, answer => answer.previousQuestion)
+  @OneToMany(() => AnswerEntity, answer => answer.previousQuestion, {
+    eager: true,
+  })
   nextAnswers: AnswerEntity[];
   @OneToOne(() => AnswerEntity, answer => answer.nextQuestion)
   previousAnswer: AnswerEntity;
