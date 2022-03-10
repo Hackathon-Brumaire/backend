@@ -10,6 +10,7 @@ export class MediaRoute {
 
   private initializeRoutes() {
     this.router.use(
+      this.path,
       express.static(process.env.FILE_UPLOADS_PATH, {
         cacheControl: true,
         maxAge: 259200000,
