@@ -4,6 +4,6 @@ import { BaseEntity, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGene
 export class RoomEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column('enum')
-  status: 'alive' | 'dead';
+  @Column()
+  status: string;
 }

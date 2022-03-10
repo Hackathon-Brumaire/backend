@@ -31,7 +31,4 @@ export class QuestionEntity extends BaseEntity {
     nullable: true,
   })
   media: MediaEntity;
-  @ManyToMany(() => PartCoordinateEntity, partCoordinate => partCoordinate.question, { nullable: false, eager: true, cascade: ['insert'] })
-  @JoinTable({ name: 'question_parts_coordinates' })
-  partsCoordinates: PartCoordinateEntity[];
 }

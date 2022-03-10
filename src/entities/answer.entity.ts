@@ -28,5 +28,6 @@ export class AnswerEntity extends BaseEntity {
     nullable: true,
     cascade: ['insert'],
   })
+  @JoinColumn()
   doc: DocEntity;
 }

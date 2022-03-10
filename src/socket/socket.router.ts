@@ -34,6 +34,7 @@ io.on('connection', async (socket: Socket) => {
     }
   } else {
     const room = await roomService.createRoom('alive');
+    console.log(room);
     const user: UserSocket = addUser({ id: socket.id, roomId: room.id, username: 'jean-' + count });
     socket.join(user.roomId.toString());
   }
@@ -48,6 +49,8 @@ io.on('connection', async (socket: Socket) => {
       messageType: 'question',
     },
   ]);
+
+  console.log('on passe ici');
 
   emitQuestion(socket, 1);
 
@@ -84,7 +87,9 @@ export const emitNoMoreQuestion = async (socket: Socket) => {
 
 export const emitQuestion = async (socket: Socket, questionId: number) => {
   const questionService = new QuestionService();
+  console.log('question');
   const question = await questionService.findQuestionById(questionId);
+  console.log('question again');
   socket.emit('question', question);
   registerQuestion(socket, question.title);
 };

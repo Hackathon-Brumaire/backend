@@ -6,9 +6,7 @@ import { QuestionEntity } from '@entities/question.entity';
 
 @EntityRepository()
 export class QuestionService extends Repository<QuestionEntity> {
-  public async createQuestion(
-    questionData: QuestionEntity,
-  ): Promise<QuestionEntity> {
+  public async createQuestion(questionData: QuestionEntity): Promise<QuestionEntity> {
     if (isEmpty(questionData)) throw new HttpException(400, 'is empty data');
 
     return await QuestionEntity.create({
@@ -32,8 +30,7 @@ export class QuestionService extends Repository<QuestionEntity> {
   ): Promise<AnswerEntity[]> {
     if (isEmpty(questionId)) throw new HttpException(400, 'no answerId');
 
-    const findQuestion: QuestionEntity =
-      await QuestionEntity.createQueryBuilder('question')
+    const findQuestion: QuestionEntity = await QuestionEntity.createQueryBuilder('question')
         .where('question.id = :questionId', { questionId })
         .leftJoinAndSelect('question.nextAnswers', 'answer')
         .getOne();
