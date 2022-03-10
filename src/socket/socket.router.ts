@@ -3,12 +3,10 @@ import { app } from '../server';
 import { UserSocket } from './interfaces/user.interface';
 import { addUser, getUser, removeUser } from './utils/users.utils';
 import { generateMessage, generateMessages } from './utils/message.utils';
+import { socketConversation } from './utils/conversation.utils';
 
 const server = require('http').createServer(app.app);
 const io = require('socket.io')(server);
-
-// server (emit) an event -> client (receive) - countUpdated
-// client (emit) an event -> server (receive) - increment
 
 // message qui appartaitra à chaque fois que un nouveau client
 // se connecte au serveur
@@ -17,12 +15,21 @@ io.on('connection', async (socket: Socket) => {
   /*if (Array.isArray(socket.handshake.query.room)) {
     return { error: 'the parameters are not valid' };
   }*/
-
+  console.log('je passe là');
   const user: UserSocket = addUser({ id: socket.id });
   // permet de créer des room, et de faire rejoindre le client dans la room
   socket.join(user.room);
 
-  socket.emit('welcome', generateMessage('Welcome!'));
+  const firstSentence = 'Welcome!';
+
+  socket.emit('welcome', generateMessage(firstSentence));
+  console.log('après le emit');
+  socketConversation.set(socket.id, [
+    {
+      message: firstSentence,
+      messageType: 'question',
+    },
+  ]);
 
   //socket.emit('welcome', generateMessage('Welcome !'))
 
@@ -38,10 +45,33 @@ io.on('connection', async (socket: Socket) => {
     }
   });
 
-  socket.on('sendMessages', async (message: string) => {
+  socket.on('sendMessages', async (answer: string) => {
     const user = getUser(socket.id);
+    const question = 'que voulez vous ?';
+
+    if (!socketConversation.has(socket.id))
+      io.to(user.room).emit(
+        'messageProblem',
+        'votre conversation a eu un probleme',
+      );
+    socketConversation.get(socket.id).push({
+      message: answer,
+      messageType: 'answer',
+    });
+    socketConversation.get(socket.id).push({
+      message: question,
+      messageType: 'question',
+    });
+
     if (user) {
-      io.to(user.room).emit('messageUpdated', generateMessages(['je suis le choix 1', 'je suis le choix 2', 'je suis le choix 3']));
+      io.to(user.room).emit('messageUpdated', {
+        question,
+        answer: [
+          'je suis le choix 1',
+          'je suis le choix 2',
+          'je suis le choix 3',
+        ],
+      });
     }
   });
 
@@ -49,8 +79,8 @@ io.on('connection', async (socket: Socket) => {
   // déclencher un événement quand un client se deconnecte
   socket.on('disconnect', async () => {
     removeUser(socket.id);
+    socketConversation.delete(socket.id);
   });
 });
-
 
 export { server };
