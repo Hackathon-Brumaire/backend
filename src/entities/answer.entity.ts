@@ -21,6 +21,6 @@ export class AnswerEntity extends BaseEntity {
   @OneToOne(() => QuestionEntity, question => question.previousAnswer)
   @JoinColumn()
   nextQuestion: QuestionEntity;
-  @OneToOne(() => DocEntity, doc => doc.answer, { nullable: true })
+  @OneToOne(() => DocEntity, doc => doc.answer, { eager: true, nullable: true })
   doc: DocEntity;
 }
