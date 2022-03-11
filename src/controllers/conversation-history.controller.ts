@@ -12,6 +12,9 @@ export class ConversationHistoryController {
     try {
       const conversationHistoryEntities =
         await this.conversationHistoryService.getFromRoomId(roomId.toString());
+        
+      console.log(conversationHistoryEntities);
+      
       conversationHistoryEntities.conversationHistorics = JSON.parse(
         conversationHistoryEntities.conversationHistorics,
       );

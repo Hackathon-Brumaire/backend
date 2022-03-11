@@ -43,7 +43,7 @@ io.on('connection', async (socket: Socket) => {
     }
   } else {
     const room = await roomService.createRoom('alive');
-    console.log(room);
+    //console.log(room);
     const user: UserSocket = addUser({
       id: socket.id,
       roomId: room.id,
@@ -63,9 +63,9 @@ io.on('connection', async (socket: Socket) => {
       createdAt: new Date().getTime(),
     },
   ]);
-  console.log('avant');
+  //console.log('avant');
   await saveConversationHistory(socket);
-  console.log('après');
+  //console.log('après');
 
   emitQuestion(socket, 1);
 
@@ -125,8 +125,8 @@ export const registerQuestion = async (socket: Socket, question: string) => {
 
 export const updateConversationHistory = async (socket: Socket) => {
   const user = getUser(socket.id);
-  console.log(socket.id);
-  console.log(socketConversation.get(socket.id));
+  //console.log(socket.id);
+  //console.log(socketConversation.get(socket.id));
   const conversationHistoryService = new ConversationHistoryService();
   const conversation = await conversationHistoryService.getFromRoomId(
     user.roomId.toString(),
@@ -144,7 +144,7 @@ export const saveConversationHistory = async (socket: Socket) => {
   const conversationHistorics = JSON.stringify(
     socketConversation.get(socket.id),
   );
-  console.log(conversationHistorics);
+  //console.log(conversationHistorics);
   return await conversationHistoryService.createConversation(
     user.roomId.toString(),
     conversationHistorics,
