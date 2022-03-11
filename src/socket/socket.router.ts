@@ -15,6 +15,7 @@ import { RoomService } from '@/services/room.service';
 import UserService from '@/services/users.service';
 import { ConversationHistoryService } from '@/services/conversation-history.service';
 import { ConversationHistoryEntity } from '@/entities/conversation-history.entity';
+import { title } from 'process';
 
 const server = app.server;
 const io = require('socket.io')(server);
@@ -108,7 +109,22 @@ export const emitNoMoreQuestion = async (socket: Socket) => {
 export const emitQuestion = async (socket: Socket, questionId: number) => {
   const questionService = new QuestionService();
   const question = await questionService.findQuestionById(questionId);
-  socket.emit('question', question);
+  let questionReturn;
+  if (question.nextAnswers.length > 0) {
+    const nextAnswers: {
+      id: number;
+      title: string;
+      nextAnswers: { id: Number; title: string; doc?: string }[];
+    } = question.nextAnswers.map(answerEntity => ({
+      ...answerEntity,
+      doc: answerEntity.doc !== null ? answerEntity.doc.link : null,
+    }));
+
+    questionReturn = { ...question, nextAnswers };
+  } else {
+    questionReturn = question;
+  }
+  socket.emit('question', questionReturn);
   registerQuestion(socket, question.title);
 };
 

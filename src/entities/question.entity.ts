@@ -31,4 +31,6 @@ export class QuestionEntity extends BaseEntity {
     cascade: true,
   })
   media: MediaEntity;
+    question: { id: number; title: string; nextAnswers: { id: Number; title: string; doc?: string; }[]; };
+    question: { id: number; title: string; nextAnswers: { id: Number; title: string; doc?: string; }[]; };
 }
