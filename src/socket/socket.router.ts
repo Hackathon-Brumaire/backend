@@ -48,7 +48,7 @@ io.on('connection', async (socket: Socket) => {
         media: null,
       });
     } else {
-      socket.emit('messageProblem', 'votre conversation a eu un probleme');
+      socket.emit('messageProblem', 'Votre conversation a eu un problème');
     }
   } else {
     const room = await roomService.createRoom('alive');
@@ -60,7 +60,7 @@ io.on('connection', async (socket: Socket) => {
     socket.join(user.roomId.toString());
     // permet de créer des room, et de faire rejoindre le client dans la room
 
-    const firstSentence = 'Welcome!';
+    const firstSentence = 'Bienvenue!';
 
     socket.emit('welcome', generateMessage(firstSentence));
     socketConversation.set(socket.id, [
@@ -195,7 +195,7 @@ export const deleteConversationHistory = async (socket: Socket) => {
 
 export const registerAnswer = (socket: Socket, answer: string) => {
   if (!socketConversation.has(socket.id))
-    socket.emit('messageProblem', 'votre conversation a eu un probleme');
+    socket.emit('messageProblem', 'Votre conversation a eu un problème');
   socketConversation.get(socket.id).push({
     message: answer,
     messageType: 'answer',
