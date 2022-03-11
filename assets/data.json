@@ -91,9 +91,9 @@
       }
     },
     {
-      "title": "Le scooteer démarre",
+      "title": "Le scooter démarre",
       "nextQuestion": {
-        "title": "Le problème est mécanique ?",
+        "title": "Le problème est-il mécanique ?",
         "nextAnswers": [
           {
             "title": "Non",
