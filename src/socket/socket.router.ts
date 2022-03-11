@@ -17,6 +17,7 @@ import UserService from '@/services/users.service';
 import { ConversationHistoryService } from '@/services/conversation-history.service';
 import { ConversationHistoryEntity } from '@/entities/conversation-history.entity';
 import { title } from 'process';
+import { RoomEntity } from '@/entities/room.entity';
 
 const server = app.server;
 const io = require('socket.io')(server);
@@ -42,7 +43,7 @@ io.on('connection', async (socket: Socket) => {
       socket.join(user.roomId.toString());
       socket.broadcast.to(user.roomId.toString()).emit('supportUser', {
         id: 123,
-        title: "Un nouvel utilisateur c'est connecté",
+        title: 'Frédéric vient de se connecter',
         nextAnswers: [],
         media: null,
       });
@@ -94,14 +95,15 @@ io.on('connection', async (socket: Socket) => {
     const user = getUser(socket.id);
     const roomId = user.roomId;
     const roomService: RoomService = new RoomService();
-    const room = await roomService.getRoom({ id: roomId, status: 'alive' });
-    await roomService.deleteRoom({
+    //const room = await roomService.getRoom({ id: roomId, status: 'alive' });
+    await RoomEntity.delete(roomId);
+    /*await roomService.deleteRoom({
       id: room.id,
       status: room.status as 'alive' | 'dead',
-    });
-    removeUser(socket.id);
-    socketConversation.delete(socket.id);
+    });*/
     deleteConversationHistory(socket);
+    socketConversation.delete(socket.id);
+    removeUser(socket.id);
   });
 });
 
