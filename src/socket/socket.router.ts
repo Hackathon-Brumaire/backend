@@ -4,6 +4,7 @@ import { UserSocket } from './interfaces/user.interface';
 import {
   addUser,
   getNumberUsersInRoom,
+  getOtherUserInRoom,
   getUser,
   removeUser,
 } from './utils/users.utils';
@@ -27,8 +28,8 @@ let count = 0;
 io.on('connection', async (socket: Socket) => {
   // Un client se connecte au serveur
   const roomService = new RoomService();
-  if (Array.isArray(socket.handshake.query.room)) {
-    const roomId = socket.handshake.query.room[0];
+  if (socket.handshake.query.room) {
+    const roomId = socket.handshake.query.room as string;
     if (
       roomService.getRoom({ id: Number.parseInt(roomId), status: 'alive' }) &&
       getNumberUsersInRoom(Number.parseInt(roomId)) < 2
@@ -39,36 +40,39 @@ io.on('connection', async (socket: Socket) => {
         username: 'admin',
       });
       socket.join(user.roomId.toString());
+      socket.broadcast.to(user.roomId.toString()).emit('supportUser', {
+        id: 123,
+        title: "Un nouvel utilisateur c'est connecté",
+        nextAnswers: [],
+        media: null,
+      });
     } else {
       socket.emit('messageProblem', 'votre conversation a eu un probleme');
     }
   } else {
     const room = await roomService.createRoom('alive');
-    //console.log(room);
     const user: UserSocket = addUser({
       id: socket.id,
       roomId: room.id,
       username: 'jean-' + count,
     });
     socket.join(user.roomId.toString());
+    // permet de créer des room, et de faire rejoindre le client dans la room
+
+    const firstSentence = 'Welcome!';
+
+    socket.emit('welcome', generateMessage(firstSentence));
+    socketConversation.set(socket.id, [
+      {
+        message: firstSentence,
+        messageType: 'question',
+        createdAt: new Date().getTime(),
+      },
+    ]);
+    await saveConversationHistory(socket);
+
+    emitQuestion(socket, 1);
   }
-  // permet de créer des room, et de faire rejoindre le client dans la room
-
-  const firstSentence = 'Welcome!';
-
-  socket.emit('welcome', generateMessage(firstSentence));
-  socketConversation.set(socket.id, [
-    {
-      message: firstSentence,
-      messageType: 'question',
-      createdAt: new Date().getTime(),
-    },
-  ]);
-  //console.log('avant');
-  await saveConversationHistory(socket);
-  //console.log('après');
-
-  emitQuestion(socket, 1);
 
   socket.on('sendMessage', async (data: string) => {
     const user = getUser(socket.id);
@@ -129,20 +133,26 @@ export const emitQuestion = async (socket: Socket, questionId: number) => {
 };
 
 export const registerQuestion = async (socket: Socket, question: string) => {
-  if (!socketConversation.has(socket.id))
-    socket.emit('messageProblem', 'votre conversation a eu un probleme');
-  socketConversation.get(socket.id).push({
-    message: question,
-    messageType: 'question',
-    createdAt: new Date().getTime(),
-  });
+  if (!socketConversation.has(socket.id)) {
+    const user = getOtherUserInRoom(socket.id);
+    socketConversation.get(user.id).push({
+      message: question,
+      messageType: 'question',
+      createdAt: new Date().getTime(),
+    });
+  } else {
+    socketConversation.get(socket.id).push({
+      message: question,
+      messageType: 'question',
+      createdAt: new Date().getTime(),
+    });
+  }
   updateConversationHistory(socket);
 };
 
 export const updateConversationHistory = async (socket: Socket) => {
   const user = getUser(socket.id);
-  //console.log(socket.id);
-  //console.log(socketConversation.get(socket.id));
+
   const conversationHistoryService = new ConversationHistoryService();
   const conversation = await conversationHistoryService.getFromRoomId(
     user.roomId.toString(),
@@ -160,7 +170,6 @@ export const saveConversationHistory = async (socket: Socket) => {
   const conversationHistorics = JSON.stringify(
     socketConversation.get(socket.id),
   );
-  //console.log(conversationHistorics);
   return await conversationHistoryService.createConversation(
     user.roomId.toString(),
     conversationHistorics,
@@ -212,10 +221,10 @@ export const sendMessageOnMultipleUser = async (
   } else {
     registerAnswer(socket, message);
   }
-
-  io.to(user.roomId).emit('question', {
+  socket.broadcast.to(user.roomId.toString()).emit('question', {
     id: 123,
     title: message,
+    type: user.username === 'admin' ? 'admin' : 'client',
     nextAnswers: [],
     media: null,
   });
