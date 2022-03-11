@@ -5,7 +5,11 @@ import { RoomService } from '@/services/room.service';
 export class RoomController {
   private roomService = new RoomService();
 
-  async getRooms(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getRooms(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const roomEntities: RoomEntity[] = await this.roomService.getAll();
       

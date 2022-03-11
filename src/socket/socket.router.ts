@@ -13,6 +13,8 @@ import { QuestionService } from '@/services/question.service';
 import { AnswerService } from '@/services/answer.service';
 import { RoomService } from '@/services/room.service';
 import UserService from '@/services/users.service';
+import { ConversationHistoryService } from '@/services/conversation-history.service';
+import { ConversationHistoryEntity } from '@/entities/conversation-history.entity';
 
 const server = app.server;
 const io = require('socket.io')(server);
@@ -26,16 +28,27 @@ io.on('connection', async (socket: Socket) => {
   const roomService = new RoomService();
   if (Array.isArray(socket.handshake.query.room)) {
     const roomId = socket.handshake.query.room[0];
-    if (roomService.getRoom({ id: Number.parseInt(roomId), status: 'alive' }) && getNumberUsersInRoom(Number.parseInt(roomId)) < 2) {
-      const user: UserSocket = addUser({ id: socket.id, roomId: Number.parseInt(roomId), username: 'admin' });
+    if (
+      roomService.getRoom({ id: Number.parseInt(roomId), status: 'alive' }) &&
+      getNumberUsersInRoom(Number.parseInt(roomId)) < 2
+    ) {
+      const user: UserSocket = addUser({
+        id: socket.id,
+        roomId: Number.parseInt(roomId),
+        username: 'admin',
+      });
       socket.join(user.roomId.toString());
     } else {
       socket.emit('messageProblem', 'votre conversation a eu un probleme');
     }
   } else {
     const room = await roomService.createRoom('alive');
-    console.log(room);
-    const user: UserSocket = addUser({ id: socket.id, roomId: room.id, username: 'jean-' + count });
+    //console.log(room);
+    const user: UserSocket = addUser({
+      id: socket.id,
+      roomId: room.id,
+      username: 'jean-' + count,
+    });
     socket.join(user.roomId.toString());
   }
   // permet de créer des room, et de faire rejoindre le client dans la room
@@ -47,10 +60,12 @@ io.on('connection', async (socket: Socket) => {
     {
       message: firstSentence,
       messageType: 'question',
+      createdAt: new Date().getTime(),
     },
   ]);
-
-  console.log('on passe ici');
+  //console.log('avant');
+  await saveConversationHistory(socket);
+  //console.log('après');
 
   emitQuestion(socket, 1);
 
@@ -70,8 +85,13 @@ io.on('connection', async (socket: Socket) => {
     const roomId = user.roomId;
     const roomService: RoomService = new RoomService();
     const room = await roomService.getRoom({ id: roomId, status: 'alive' });
-    if (roomService.deleteRoom(room)) removeUser(socket.id);
+    await roomService.deleteRoom({
+      id: room.id,
+      status: room.status as 'alive' | 'dead',
+    });
+    removeUser(socket.id);
     socketConversation.delete(socket.id);
+    deleteConversationHistory(socket);
   });
 });
 
@@ -87,27 +107,69 @@ export const emitNoMoreQuestion = async (socket: Socket) => {
 
 export const emitQuestion = async (socket: Socket, questionId: number) => {
   const questionService = new QuestionService();
-  console.log('question');
   const question = await questionService.findQuestionById(questionId);
-  console.log('question again');
   socket.emit('question', question);
   registerQuestion(socket, question.title);
 };
 
-export const registerQuestion = (socket: Socket, question: string) => {
-  if (!socketConversation.has(socket.id)) socket.emit('messageProblem', 'votre conversation a eu un probleme');
+export const registerQuestion = async (socket: Socket, question: string) => {
+  if (!socketConversation.has(socket.id))
+    socket.emit('messageProblem', 'votre conversation a eu un probleme');
   socketConversation.get(socket.id).push({
     message: question,
     messageType: 'question',
+    createdAt: new Date().getTime(),
   });
+  updateConversationHistory(socket);
+};
+
+export const updateConversationHistory = async (socket: Socket) => {
+  const user = getUser(socket.id);
+  //console.log(socket.id);
+  //console.log(socketConversation.get(socket.id));
+  const conversationHistoryService = new ConversationHistoryService();
+  const conversation = await conversationHistoryService.getFromRoomId(
+    user.roomId.toString(),
+  );
+  conversation.conversationHistorics = JSON.stringify(
+    socketConversation.get(socket.id),
+  );
+
+  conversation.save();
+};
+
+export const saveConversationHistory = async (socket: Socket) => {
+  const user = getUser(socket.id);
+  const conversationHistoryService = new ConversationHistoryService();
+  const conversationHistorics = JSON.stringify(
+    socketConversation.get(socket.id),
+  );
+  //console.log(conversationHistorics);
+  return await conversationHistoryService.createConversation(
+    user.roomId.toString(),
+    conversationHistorics,
+  );
+};
+
+export const deleteConversationHistory = async (socket: Socket) => {
+  const user = getUser(socket.id);
+  const conversationHistoryService = new ConversationHistoryService();
+  const conversation = await conversationHistoryService.getFromRoomId(
+    user.roomId.toString(),
+  );
+
+  await conversation.remove();
 };
 
 export const registerAnswer = (socket: Socket, answer: string) => {
-  if (!socketConversation.has(socket.id)) socket.emit('messageProblem', 'votre conversation a eu un probleme');
+  if (!socketConversation.has(socket.id))
+    socket.emit('messageProblem', 'votre conversation a eu un probleme');
   socketConversation.get(socket.id).push({
     message: answer,
     messageType: 'answer',
+    createdAt: new Date().getTime(),
   });
+  updateConversationHistory(socket);
 };
 
 export const sendMessageOnOneUser = async (socket: Socket, id: number) => {
@@ -124,7 +186,10 @@ export const sendMessageOnOneUser = async (socket: Socket, id: number) => {
   emitQuestion(socket, nextQuestion.id);
 };
 
-export const sendMessageOnMultipleUser = async (socket: Socket, message: string) => {
+export const sendMessageOnMultipleUser = async (
+  socket: Socket,
+  message: string,
+) => {
   const user = getUser(socket.id);
   if (user.username === 'admin') {
     registerQuestion(socket, message);
@@ -132,7 +197,12 @@ export const sendMessageOnMultipleUser = async (socket: Socket, message: string)
     registerAnswer(socket, message);
   }
 
-  io.to(user.roomId).emit('question', { id: 123, title: message, nextAnswers: [], media: null });
+  io.to(user.roomId).emit('question', {
+    id: 123,
+    title: message,
+    nextAnswers: [],
+    media: null,
+  });
 };
 
 export { server };

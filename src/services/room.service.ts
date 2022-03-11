@@ -1,5 +1,4 @@
 import { RoomEntity } from '@/entities/room.entity';
-import { HttpException } from '@/exceptions/HttpException';
 import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository()
@@ -18,13 +17,19 @@ export class RoomService extends Repository<RoomEntity> {
     }).save();
   }
 
-  public async deleteRoom(roomEntity: { id: number; status: 'alive' | 'dead' }): Promise<void> {
+  public async deleteRoom(roomEntity: {
+    id: number;
+    status: 'alive' | 'dead';
+  }): Promise<void> {
     await RoomEntity.delete({
       ...roomEntity,
     });
   }
 
-  public async getRoom(roomEntity: { id: number; status: 'alive' | 'dead' }): Promise<RoomEntity> {
+  public async getRoom(roomEntity: {
+    id: number;
+    status: 'alive' | 'dead';
+  }): Promise<RoomEntity> {
     return await RoomEntity.findOne({
       where: { id: roomEntity.id, status: roomEntity.status },
     });
