@@ -1,8 +1,8 @@
 {
-  "title": "Le moteur démarre-t-il ?",
+  "title": "Le scooter démarre-t-il ?",
   "nextAnswers": [
     {
-      "title": "Le moteur ne démarre pas",
+      "title": "Le scooter ne démarre pas",
       "nextQuestion": {
         "title": "Avez vous un ou plusieurs voyants allumés ?",
         "nextAnswers": [
@@ -91,7 +91,7 @@
       }
     },
     {
-      "title": "Le moteur démarre",
+      "title": "Le scooteer démarre",
       "nextQuestion": {
         "title": "Le problème est mécanique ?",
         "nextAnswers": [
