@@ -11,13 +11,13 @@ import { AnswerEntity } from '@entities/answer.entity';
 export class DocEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: string;
-  @Column()
+  @Column({ nullable: true })
   link: string;
-  @Column()
+  @Column({ nullable: true })
   type: string;
-  @Column()
+  @Column({ nullable: true })
   description: string;
-  @Column()
+  @Column({ nullable: false })
   label: string;
   @OneToOne(() => AnswerEntity, answer => answer.doc, { nullable: false })
   answer: AnswerEntity;
