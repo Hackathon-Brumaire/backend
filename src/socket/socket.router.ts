@@ -83,6 +83,11 @@ io.on('connection', async (socket: Socket) => {
     }
   });
 
+  socket.on('transportToVisio', async () => {
+    const user = getUser(socket.id);
+    socket.emit('roomIdForVisio', user.roomId);
+  });
+
   // Un client se déconnecte du serveur
   // déclencher un événement quand un client se deconnecte
   socket.on('disconnect', async () => {
