@@ -229,7 +229,6 @@ export const sendMessageOnMultipleUser = async (
   socket.broadcast.to(user.roomId.toString()).emit('question', {
     id: 123,
     title: message,
-    type: user.username === 'admin' ? 'admin' : 'client',
     nextAnswers: [],
     media: null,
   });
