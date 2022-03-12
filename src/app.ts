@@ -6,10 +6,8 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
 import compression from 'compression';
-import swaggerUi from 'swagger-ui-express';
-import swaggerJSDoc from 'swagger-jsdoc';
 import { createConnection } from 'typeorm';
-import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
+import { CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
 import { dbConnection } from '@databases';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
@@ -19,6 +17,7 @@ class App {
   public app: express.Application;
   public env: string;
   public port: string | number;
+  public server: any;
 
   constructor(routes: Routes[]) {
     this.app = express();
@@ -26,14 +25,14 @@ class App {
     this.port = PORT || 3000;
 
     this.env !== 'test' && this.connectToDatabase();
+    this.server = require('http').createServer(this.app);
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
-    this.initializeSwagger();
     this.initializeErrorHandling();
   }
 
-  public listen() {
-    this.app.listen(this.port, () => {
+  public listen(server: any) {
+    server.listen(this.port, () => {
       logger.info(`=================================`);
       logger.info(`======= ENV: ${this.env} =======`);
       logger.info(`🚀 App listening on the port ${this.port}`);
@@ -64,22 +63,6 @@ class App {
     routes.forEach(route => {
       this.app.use('/', route.router);
     });
-  }
-
-  private initializeSwagger() {
-    const options = {
-      swaggerDefinition: {
-        info: {
-          title: 'REST API',
-          version: '1.0.0',
-          description: 'Example docs',
-        },
-      },
-      apis: ['swagger.yaml'],
-    };
-
-    const specs = swaggerJSDoc(options);
-    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
   }
 
   private initializeErrorHandling() {

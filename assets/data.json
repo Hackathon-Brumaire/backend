@@ -1,0 +1,198 @@
+{
+  "title": "Le scooter démarre-t-il ?",
+  "nextAnswers": [
+    {
+      "title": "Le scooter ne démarre pas",
+      "nextQuestion": {
+        "title": "Avez vous un ou plusieurs voyants allumés ?",
+        "nextAnswers": [
+          {
+            "title": "Plusieurs voyants"
+          },
+          {
+            "title": "Un voyant",
+            "nextQuestion": {
+              "title": "Quel voyant est allumé ?",
+              "nextAnswers": [
+                {
+                  "title": "Moteur",
+                  "doc": {
+                    "label": "Vérification du moteur",
+                    "description": "Vidéo de démonstration d'une vérification de moteur",
+                    "type": "video",
+                    "link": "https://www.youtube.com/watch?v=xyMzWUpjysQ"
+                  }
+                },
+                {
+                  "title": "Batterie",
+                  "doc": {
+                    "label": "Vérification de la batterie",
+                    "description": "Vidéo de démonstration d'une vérification de batterie",
+                    "type": "video",
+                    "link": "https://www.youtube.com/watch?v=fTLzWPUZYkA"
+                  }
+                },
+                {
+                  "title": "Frein",
+                  "doc": {
+                    "label": "Vérification du frein",
+                    "description": "Vidéo de démonstration d'une vérification du frein",
+                    "type": "video",
+                    "link": "https://www.youtube.com/watch?v=5B6eWabAt2Y"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "title": "Aucun voyant",
+            "nextQuestion": {
+              "title": "Vérifiez la batterie",
+              "doc": {
+                "label": "Vérification du frein",
+                "description": "Vidéo de démonstration d'une vérification du frein",
+                "type": "video",
+                "link": "https://www.youtube.com/watch?v=Ae1VjvOz_lI"
+              },
+              "nextAnswers": [
+                {
+                  "title": "Bon état",
+                  "nextQuestion": {
+                    "title": "Vérifiez le moteur",
+                    "nextActions": [
+                      {
+                        "title": "Bon état"
+                      },
+                      {
+                        "title": "Mauvais état",
+                        "doc": {
+                          "label": "Vérification du frein",
+                          "description": "Vidéo de démonstration d'une vérification du frein",
+                          "type": "video",
+                          "link": "https://www.youtube.com/watch?v=5B6eWabAt2Y"
+                        }
+                      }
+                    ],
+                    "doc": {
+                      "label": "Vérification du frein",
+                      "description": "Vidéo de démonstration d'une vérification du frein",
+                      "type": "video",
+                      "link": "https://www.youtube.com/watch?v=5B6eWabAt2Y"
+                    }
+                  }
+                },
+                {
+                  "title": "Mauvais état"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "title": "Le scooter démarre",
+      "nextQuestion": {
+        "title": "Le problème est-il mécanique ?",
+        "nextAnswers": [
+          {
+            "title": "Non",
+            "nextQuestion": {
+              "title": "Quel accessoire est concerné ?",
+              "nextAnswers": [
+                {
+                  "title": "Batterie",
+                  "doc": {
+                    "label": "Vérification de la batterie",
+                    "description": "Vidéo de démonstration d'une vérification de batterie",
+                    "type": "video",
+                    "link": "https://www.youtube.com/watch?v=fTLzWPUZYkA"
+                  }
+                },
+                {
+                  "title": "Jupe",
+                  "doc": {
+                    "label": "Vérification de la jupe",
+                    "description": "Vidéo de demonstration d'une vérification et du changement de la jupe",
+                    "type": "video",
+                    "link": "https://www.youtube.com/watch?v=fTLzWPUZYkA"
+                  }
+                },
+                {
+                  "title": "Selle",
+                  "doc": {
+                    "label": "Vérification de la selle",
+                    "description": "Vidéo de démonstration d'une réparation et du changement de la selle",
+                    "type": "video",
+                    "link": "https://www.youtube.com/watch?v=fTLzWPUZYkA"
+                  }
+                },
+                {
+                  "title": "Top case",
+                  "doc": {
+                    "label": "Vérification du top case",
+                    "description": "Vidéo de démonstration d'une réparation et du changement du top case",
+                    "type": "video",
+                    "link": "https://www.youtube.com/watch?v=xyMzWUpjysQ"
+                  }
+                },
+                {
+                  "title": "Compteur de vitesse",
+                  "doc": {
+                    "label": "Vérification du compteur de vitesse",
+                    "description": "Vidéo de demonstration d'une réparation et du changement du compteur de vitesse",
+                    "type": "video",
+                    "link": "https://www.youtube.com/watch?v=xyMzWUpjysQ"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "title": "Oui",
+            "nextQuestion": {
+              "title": "Quel accessoire est concerné ?",
+              "nextAnswers": [
+                {
+                  "title": "Cale pieds",
+                  "doc": {
+                    "label": "Vérification du cale pieds",
+                    "description": "Vidéo de démonstration d'une réparation du cale pieds",
+                    "type": "video",
+                    "link": "https://www.youtube.com/watch?v=fTLzWPUZYkA"
+                  }
+                },
+                {
+                  "title": "Frein",
+                  "nextQuestion": {
+                    "title": "Quel problème a t-il ?",
+                    "nextAnswers": [
+                      {
+                        "title": "Prise tordu",
+                        "doc": {
+                          "label": "Vérification de la prise de la batterie",
+                          "description": "Vidéo de démonstration d'une vérification et du remplacement d'une prise de batterie",
+                          "type": "video",
+                          "link": "https://www.youtube.com/watch?v=5B6eWabAt2Y"
+                        }
+                      },
+                      {
+                        "title": "Grincement",
+                        "doc": {
+                          "label": "Vérification du cale pieds",
+                          "description": "Vidéo de démonstration d'une réparation du cale pieds",
+                          "type": "video",
+                          "link": "https://www.youtube.com/watch?v=5B6eWabAt2Y"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

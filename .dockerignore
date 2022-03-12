@@ -1,6 +1,7 @@
 # compiled output
 .vscode
-/node_modules
+node_modules
+dist
 
 # code formatter
 .eslintrc
@@ -10,9 +11,5 @@
 .lintstagedrc.json
 .prettierrc
 
-# test
-jest.config.js
-
 # docker
 Dockerfile
-docker-compose.yml
